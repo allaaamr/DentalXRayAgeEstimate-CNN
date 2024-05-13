@@ -11,10 +11,8 @@ class DentalXRayDataset(Dataset):
 		Args:
 			csv_file (string): Path to the csv file with annotations.
             root_dir (string): Path to the root directory of images.
-			shuffle (boolean): Whether to shuffle.
             transform (callable, optional): A function/transform that takes in an PIL image
                 and returns a transformed version. E.g, ``transforms.ToTensor()``.
-			seed (int): random seed for shuffling the data
 		"""
         self.data = pd.read_csv(csv_file)
         self.root_dir = root_dir
