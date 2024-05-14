@@ -5,16 +5,58 @@ from timeit import default_timer as timer
 
 ## Internal Imports
 from DentalXRayDataset import DentalXRayDataset
+from model import CustomCNN
 
 ### PyTorch Imports
 import torch
 import torch.nn as nn
+import torch.optim as optim
+from sklearn.metrics import mean_squared_error
 import torch.nn.functional as F
 from torchvision import transforms
 from torch.utils.data import DataLoader, sampler, random_split
 
 def main():
-    pass
+    #hyperparameters for the grid search
+    pretrained_models = ['DenseNet201', 'InceptionResNetV2', 'ResNet50', 'VGG16', 'VGG19', 'Xception']
+    num_channels_range = range(5, 1001)
+    fc_size_range = range(1, 2049)
+    learning_rate = 3.24e-4
+
+    best_model = None
+    best_loss = float('inf')
+
+    for pretrained_model_name in pretrained_models:
+        for num_channels in num_channels_range:
+            for fc_size in fc_size_range:
+                # Create the model
+                model = CustomCNN(pretrained_model_name, num_channels, use_attention=False, fc_size=fc_size)
+
+                # Define the loss function and optimizer
+                criterion = nn.MSELoss()
+                optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+
+                # Train the model
+                model.train()
+                for epoch in range(100):
+                    # Iterate over the training dataset
+                    for inputs, labels in train_loader:
+                        optimizer.zero_grad()
+                        outputs = model(inputs)
+                        loss = criterion(outputs, labels)
+                        loss.backward()
+                        optimizer.step()
+
+                # Evaluate the model
+                model.eval()
+                with torch.no_grad():
+                    test_outputs = model(test_dataset)
+                    test_loss = criterion(test_outputs, test_labels)
+
+                # Update the best model if this model has the lowest loss
+                if test_loss < best_loss:
+                    best_loss = test_loss
+                    best_model = model
 
 # Define the transformations you want to apply to your images
 transform = transforms.Compose([

@@ -23,7 +23,7 @@ class DentalXRayDataset(Dataset):
 
     def __getitem__(self, idx):
         img_name = os.path.join(self.root_dir, self.data.iloc[idx, 0])
-        image = Image.open(img_name)
+        image = Image.open(img_name).transform()
         age = self.data.iloc[idx, 1]
         if self.transform:
             image = self.transform(image)
