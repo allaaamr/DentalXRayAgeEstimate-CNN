@@ -7,6 +7,7 @@ class CustomCNN(nn.Module):
         super(CustomCNN, self).__init__()
 
         # Loading the pretrained model
+        # NEEDS to be updated to NEWW wayy
         if pretrained_model_name == 'DenseNet201':
             self.pretrained_model = models.densenet201(pretrained=True)
         elif pretrained_model_name == 'InceptionResNetV2':
@@ -30,7 +31,7 @@ class CustomCNN(nn.Module):
         self.conv1x1 = nn.Conv2d(in_channels=self.pretrained_model.classifier.in_features,
                                   out_channels=num_channels,
                                   kernel_size=1)
-
+        self.flatten = nn.Flatten()
         # Optional attention mechanism
         if use_attention:
             pass
@@ -45,10 +46,12 @@ class CustomCNN(nn.Module):
         # Batch normalization
         self.batch_norm = nn.BatchNorm1d(fc_size)
 
+
     def forward(self, x):
         features = self.pretrained_model.features(x)
         out = self.conv1x1(out)
-        out = out.view(out.size(0), -1) #flattens the tensor, converting it from a 4D tensor to a 2D tensor with shape (batch_size, num_features) 
+        out = self.flatten(out)
+        # out = out.view(out.size(0), -1) #flattens the tensor, converting it from a 4D tensor to a 2D tensor with shape (batch_size, num_features) 
         #batch normalization is used after the first layer to make network more stable
         # through normalization of the layer's inputs by recentering and rescaling
         out = self.relu(self.fc1(self.batch_norm(out)))

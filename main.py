@@ -41,12 +41,24 @@ def main():
                 for epoch in range(100):
                     # Iterate over the training dataset
                     for inputs, labels in train_loader:
+                        # optimizer.zero_grad()
+                        # outputs = model(inputs)
+                        # loss = criterion(outputs, labels)
+                        # loss.backward()
+                        # optimizer.step()
+
+                        #1 Forward Pass
+                        output = model(inputs)
+                        #2. Calculate Loss
+                        loss = criterion(output, labels)
+                        #3 Optimizer Zero Grad
                         optimizer.zero_grad()
-                        outputs = model(inputs)
-                        loss = criterion(outputs, labels)
+                        #4 Perform back propagation on the loss 
                         loss.backward()
+                        #5 Step the optimizer
                         optimizer.step()
 
+                #Testing
                 # Evaluate the model
                 model.eval()
                 with torch.no_grad():
